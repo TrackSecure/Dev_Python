@@ -135,3 +135,4 @@ while chave != 2:
             db_connection.commit()
     else:
         print("Tchauuu :)")
+

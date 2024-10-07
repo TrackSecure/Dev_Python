@@ -4,11 +4,19 @@ import platform
 from socket import gethostname
 import csv
 import boto3
+from atlassian import Jira
+from requests import HTTPError
 
 nomeMaquina = gethostname()
 
 campos = ["Máquina", "SO", "PorcentCPU", "FreqCPU", "UsoRAM", "PorcentRAM", "UsoDisco", "PorcentDisco"]
 linhas = []
+
+jira =Jira(
+    url = "https://sptech-team-it55r942.atlassian.net",
+    username = "felipe.patroni@sptech.school",
+    password = "" #TOKEN
+)
 
 while (True):
         qtdCapturas = int(input(("Quantas capturas deseja fazer? \n ")))
@@ -57,6 +65,65 @@ while (True):
             time.sleep(intervaloTempo)
 
         resposta = input("Deseja continuar? s/n: ")
+
+        if(disc_percent > 90):
+            summary = 'DISCO EMERGENCIA'
+            description = 'Disco está com uso extremamente elevado!'
+            priority = 'High'
+        elif(disc_percent >= 80):
+            summary = 'DISCO CRITICO'
+            description = 'Disco está com muito uso!'
+            priority = 'Medium'
+        elif(disc_percent >= 50):
+            summary = 'ATENÇÃO DISCO'
+            description = 'Disco está com uso elevado!'
+            priority = 'Low'
+
+        if(ram_percent > 90):
+            summary = 'RAM EMERGENCIA'
+            description = 'RAM está com uso extremamente elevado!'
+            priority = 'High'
+        elif(ram_percent >= 80):
+            summary = 'RAM CRITICA'
+            description = 'RAM está com muito uso!'
+            priority = 'Medium'
+        elif(ram_percent >= 50):
+            summary = 'ATENÇÃO RAM'
+            description = 'RAM está com uso elevado!'
+            priority = 'Low'
+        
+        if(cpu_porcent > 90):
+            summary = 'CPU EMERGENCIA'
+            description = 'CPU está com uso extremamente elevado!'
+            priority = 'High'
+        elif(cpu_porcent >= 80):
+            summary = 'CPU CRITICA'
+            description = 'CPU está com muito uso!'
+            priority = 'Medium'
+        elif (cpu_porcent >= 50):
+            summary = 'ATENÇÃO CPU'
+            description = 'CPU está com uso elevado!'
+            priority = 'Low'
+        
+        try:
+
+            jira.issue_create(
+                fields={
+                    'project': {
+                        'key': 'TRAC' #SIGLA
+                    },
+                    'summary': summary, #titulo do chamado
+                    'description': description, #descrição
+                    'issuetype': {
+                        "name": "Task" #Tipo de chamado 
+                    },
+                    'priority': {
+                        'name': priority
+                    }
+                }
+            )    
+        except HTTPError as e :
+            print(e.response.text)
 
         if(resposta == "s"):
             continue
