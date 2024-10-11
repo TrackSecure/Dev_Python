@@ -1,0 +1,22 @@
+[
+    {
+        "M\u00e1quina": "BrunoNOTE",
+        "SO": "Windows",
+        "PorcentCPU": 2.2,
+        "FreqCPU": 2803.0,
+        "UsoRAM": 10121179136,
+        "PorcentRAM": 39.7,
+        "UsoDisco": 121842782208,
+        "PorcentDisco": 25.4
+    },
+    {
+        "M\u00e1quina": "BrunoNOTE",
+        "SO": "Windows",
+        "PorcentCPU": 4.2,
+        "FreqCPU": 1001.0,
+        "UsoRAM": 10126118912,
+        "PorcentRAM": 39.7,
+        "UsoDisco": 121842782208,
+        "PorcentDisco": 25.4
+    }
+]

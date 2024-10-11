@@ -71,5 +71,5 @@ with open(filename, "w") as arquivojson:
     json.dump(json_py, arquivojson)
 
 s3 = boto3.client('s3')
-with open("dados_capturados.csv", "rb") as file:
+with open("dados_capturados.json", "rb") as file:
     s3.upload_fileobj(file, "s3-raw-lab-tracksecure", "dados_capturados.json")
