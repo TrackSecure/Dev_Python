@@ -49,7 +49,7 @@ while (True):
             
             print(mensagem)
             
-            linha = {"Máquina":nomeMaquina, "SO":so, "PorcentCPU":cpu_porcent, "FreqCPU":cpu_speed, 
+            linha = {"Maquina":nomeMaquina, "SO":so, "PorcentCPU":cpu_porcent, "FreqCPU":cpu_speed, 
             "UsoRAM":ram_used, "PorcentRAM":ram_percent, "UsoDisco":disc_used, "PorcentDisco":disc_percent}
             json_py.append(linha)
 
