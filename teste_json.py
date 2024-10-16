@@ -39,7 +39,7 @@ while (True):
                       Máquina: {nomeMaquina}
                       SO: {so}
                       Uso da CPU: {cpu_porcent}%
-                      Frequência de Uso da CPU: {cpu_speed} Hz
+                      Frequência de Uso da CPU: {cpu_speed} MHz
                       Uso em GB RAM: {ram_used} Bytes
                       Uso da memória RAM: {ram_percent} %
                       Uso do disco: {disc_used} Bytes

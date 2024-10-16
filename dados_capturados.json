@@ -1,22 +1,32 @@
 [
     {
-        "M\u00e1quina": "BrunoNOTE",
+        "Maquina": "BrunoNOTE",
         "SO": "Windows",
-        "PorcentCPU": 2.2,
+        "PorcentCPU": 0.4,
         "FreqCPU": 2803.0,
-        "UsoRAM": 10121179136,
-        "PorcentRAM": 39.7,
-        "UsoDisco": 121842782208,
-        "PorcentDisco": 25.4
+        "UsoRAM": 9694289920,
+        "PorcentRAM": 38.0,
+        "UsoDisco": 118588321792,
+        "PorcentDisco": 24.7
     },
     {
-        "M\u00e1quina": "BrunoNOTE",
+        "Maquina": "BrunoNOTE",
         "SO": "Windows",
-        "PorcentCPU": 4.2,
-        "FreqCPU": 1001.0,
-        "UsoRAM": 10126118912,
-        "PorcentRAM": 39.7,
-        "UsoDisco": 121842782208,
-        "PorcentDisco": 25.4
+        "PorcentCPU": 1.0,
+        "FreqCPU": 2803.0,
+        "UsoRAM": 9677312000,
+        "PorcentRAM": 38.0,
+        "UsoDisco": 118588321792,
+        "PorcentDisco": 24.7
+    },
+    {
+        "Maquina": "BrunoNOTE",
+        "SO": "Windows",
+        "PorcentCPU": 6.7,
+        "FreqCPU": 2803.0,
+        "UsoRAM": 9671716864,
+        "PorcentRAM": 38.0,
+        "UsoDisco": 118588321792,
+        "PorcentDisco": 24.7
     }
 ]
