@@ -4,6 +4,7 @@ import platform
 from socket import gethostname
 import json
 import boto3
+import datetime
 
 nomeMaquina = gethostname()
 
@@ -64,8 +65,9 @@ while (True):
         else:
             break
 
-
-filename = "dados_capturados.json"
+data = str(datetime.datetime.now()).replace(" ", "_") 
+data = data.replace(":", "_")
+filename = f"dados_capturados_{data}_{nomeMaquina}.json"
 
 with open(filename, "w") as arquivojson:
     json.dump(json_py, arquivojson)

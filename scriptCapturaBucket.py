@@ -66,62 +66,107 @@ while (True):
 
         resposta = input("Deseja continuar? s/n: ")
 
+        problema_disco = False
+        problema_ram = False
+        problema_cpu = False
+
         if(disc_percent > 90):
-            summary = 'DISCO EMERGENCIA'
-            description = 'Disco está com uso extremamente elevado!'
-            priority = 'High'
+            summary_disco = 'DISCO EMERGENCIA'
+            description_disco = 'Disco está com uso extremamente elevado!'
+            priority_disco = 'High'
+            problema_disco = True
         elif(disc_percent >= 80):
-            summary = 'DISCO CRITICO'
-            description = 'Disco está com muito uso!'
-            priority = 'Medium'
+            summary_disco = 'DISCO CRITICO'
+            description_disco = 'Disco está com muito uso!'
+            priority_disco = 'Medium'
+            problema_disco = True
         elif(disc_percent >= 50):
-            summary = 'ATENÇÃO DISCO'
-            description = 'Disco está com uso elevado!'
-            priority = 'Low'
+            summary_disco = 'ATENÇÃO DISCO'
+            description_disco = 'Disco está com uso elevado!'
+            priority_disco = 'Low'
+            problema_disco = True
 
         if(ram_percent > 90):
-            summary = 'RAM EMERGENCIA'
-            description = 'RAM está com uso extremamente elevado!'
-            priority = 'High'
+            summary_ram = 'RAM EMERGENCIA'
+            description_ram = 'RAM está com uso extremamente elevado!'
+            priority_ram = 'High'
+            problema_ram = True
         elif(ram_percent >= 80):
-            summary = 'RAM CRITICA'
-            description = 'RAM está com muito uso!'
-            priority = 'Medium'
-        elif(ram_percent >= 50):
-            summary = 'ATENÇÃO RAM'
-            description = 'RAM está com uso elevado!'
-            priority = 'Low'
+            summary_ram = 'RAM CRITICA'
+            description_ram = 'RAM está com muito uso!'
+            priority_ram = 'Medium'
+            problema_ram = True
+        elif(ram_percent >= 30):
+            summary_ram = 'ATENÇÃO RAM'
+            description_ram = 'RAM está com uso elevado!'
+            priority_ram = 'Low'
+            problema_ram = True
         
         if(cpu_porcent > 90):
-            summary = 'CPU EMERGENCIA'
-            description = 'CPU está com uso extremamente elevado!'
-            priority = 'High'
+            summary_cpu = 'CPU EMERGENCIA'
+            description_cpu = 'CPU está com uso extremamente elevado!'
+            priority_cpu = 'High'
+            problema_cpu = True
         elif(cpu_porcent >= 80):
-            summary = 'CPU CRITICA'
-            description = 'CPU está com muito uso!'
-            priority = 'Medium'
+            summary_cpu = 'CPU CRITICA'
+            description_cpu = 'CPU está com muito uso!'
+            priority_cpu = 'Medium'
+            problema_cpu = True
         elif (cpu_porcent >= 50):
-            summary = 'ATENÇÃO CPU'
-            description = 'CPU está com uso elevado!'
-            priority = 'Low'
+            summary_cpu = 'ATENÇÃO CPU'
+            description_cpu = 'CPU está com uso elevado!'
+            priority_cpu = 'Low'
+            problema_cpu = True
         
         try:
-
-            jira.issue_create(
-                fields={
-                    'project': {
-                        'key': 'TRAC' #SIGLA
-                    },
-                    'summary': summary, #titulo do chamado
-                    'description': description, #descrição
-                    'issuetype': {
-                        "name": "Task" #Tipo de chamado 
-                    },
-                    'priority': {
-                        'name': priority
+            if (problema_disco):
+                jira.issue_create(
+                    fields={
+                        'project': {
+                            'key': 'TRAC' #SIGLA
+                        },
+                        'summary': summary_disco, #titulo do chamado
+                        'description': description_disco, #descrição
+                        'issuetype': {
+                            "name": "Task" #Tipo de chamado 
+                        },
+                        'priority': {
+                            'name': priority_disco
+                        }
                     }
-                }
-            )    
+                )
+            if (problema_ram):
+                jira.issue_create(
+                    fields={
+                        'project': {
+                            'key': 'TRAC' #SIGLA
+                        },
+                        'summary': summary_ram, #titulo do chamado
+                        'description': description_ram, #descrição
+                        'issuetype': {
+                            "name": "Task" #Tipo de chamado 
+                        },
+                        'priority': {
+                            'name': priority_ram
+                        }
+                    }
+                )   
+            if (problema_cpu):
+                jira.issue_create(
+                    fields={
+                        'project': {
+                            'key': 'TRAC' #SIGLA
+                        },
+                        'summary': summary_cpu, #titulo do chamado
+                        'description': description_cpu, #descrição
+                        'issuetype': {
+                            "name": "Task" #Tipo de chamado 
+                        },
+                        'priority': {
+                            'name': priority_cpu
+                        }
+                    }
+                )    
         except HTTPError as e :
             print(e.response.text)
 
