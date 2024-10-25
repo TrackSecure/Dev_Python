@@ -183,6 +183,6 @@ with open(filename, "w") as arquivocsv:
     csvwriter.writerow(campos)
     csvwriter.writerows(linhas)
 
-s3 = boto3.client('s3')
-with open("dados_capturados.csv", "rb") as file:
-    s3.upload_fileobj(file, "s3-raw-lab-tracksecure", "dados_capturados.csv")
+# s3 = boto3.client('s3')
+# with open("dados_capturados.csv", "rb") as file:
+#     s3.upload_fileobj(file, "s3-raw-lab-tracksecure", "dados_capturados.csv")
