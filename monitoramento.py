@@ -2,15 +2,18 @@ import psutil
 import time
 import platform
 from socket import gethostname
-import csv
+import json
 import boto3
+import datetime
 from atlassian import Jira
 from requests import HTTPError
+import subprocess
+import csv
+import re
 
 nomeMaquina = gethostname()
 
-campos = ["Máquina", "SO", "PorcentCPU", "FreqCPU", "UsoRAM", "PorcentRAM", "UsoDisco", "PorcentDisco"]
-linhas = []
+json_py = []
 
 jira =Jira(
     url = "https://sptech-team-it55r942.atlassian.net",
@@ -25,20 +28,20 @@ while (True):
         for i in range(qtdCapturas):
 
             cpu_porcent = psutil.cpu_percent(interval=1)
-            cpu_speed = psutil.cpu_freq().current / pow(10,3)
+            cpu_speed = psutil.cpu_freq().current #/ pow(10,3)
             
             so = platform.system()
 
             if (so == 'Windows'):
                 # DIRETÓRIO PARA WINDOWS    
-                disc_used = psutil.disk_usage('C:\\').used / pow(10,9)
+                disc_used = psutil.disk_usage('C:\\').used #/ pow(10,9)
                 disc_percent = psutil.disk_usage('C:\\').percent
             elif (so == 'Linux'):
                 # DIRETÓRIO PARA LINUX
-                disc_used = psutil.disk_usage('/bin').used / pow(10,9)
+                disc_used = psutil.disk_usage('/bin').used #/ pow(10,9)
                 disc_percent = psutil.disk_usage('/bin').percent    
 
-            ram_used = (psutil.virtual_memory().used) / pow(10,9)
+            ram_used = (psutil.virtual_memory().used) #/ pow(10,9)
             ram_percent = psutil.virtual_memory().percent
 
             # Cria uma mensagem, com valores arredondados e printa essa mensagem
@@ -47,18 +50,20 @@ while (True):
                       {i + 1}º captura   
                       Máquina: {nomeMaquina}
                       SO: {so}
-                      Uso da CPU: {cpu_porcent:.2f}%
-                      Frequência de Uso da CPU: {cpu_speed:.2f}Mhz
-                      Uso em GB RAM: {ram_used:.2f} GB
-                      Uso da memória RAM: {ram_percent:.2f} %
-                      Uso do disco: {disc_used:.2f} GB
-                      Porcentagem Disco usada: {disc_percent:.2f} %
+                      Uso da CPU: {cpu_porcent}%
+                      Frequência de Uso da CPU: {cpu_speed} MHz
+                      Uso em GB RAM: {ram_used} Bytes
+                      Uso da memória RAM: {ram_percent} %
+                      Uso do disco: {disc_used} Bytes
+                      Porcentagem Disco usada: {disc_percent} %
                       """
+                      # É necessário arredondar para duas casas na ETL Java
             
             print(mensagem)
             
-            linha = [nomeMaquina, so, cpu_porcent, cpu_speed, ram_used, ram_percent, disc_used, disc_percent]
-            linhas.append(linha)
+            linha = {"Maquina":nomeMaquina, "SO":so, "PorcentCPU":cpu_porcent, "FreqCPU":cpu_speed, 
+            "UsoRAM":ram_used, "PorcentRAM":ram_percent, "UsoDisco":disc_used, "PorcentDisco":disc_percent}
+            json_py.append(linha)
 
             # Coloca um intervalo de tempo a captura 
 
@@ -175,14 +180,34 @@ while (True):
         else:
             break
 
+data = str(datetime.datetime.now()).replace(" ", "_") 
+data = data.replace(":", "_")
+filename = f"dados_capturados_{data}_{nomeMaquina}.json"
 
-filename = "dados_capturados.csv"
+with open(filename, "w") as arquivojson:
+    json.dump(json_py, arquivojson)
 
-with open(filename, "w") as arquivocsv:
-    csvwriter = csv.writer(arquivocsv)
-    csvwriter.writerow(campos)
-    csvwriter.writerows(linhas)
+s3 = boto3.client('s3')
+with open("dados_capturados.json", "rb") as file:
+    s3.upload_fileobj(file, "s3-raw-lab-tracksecure", "dados_capturados.json")
 
-# s3 = boto3.client('s3')
-# with open("dados_capturados.csv", "rb") as file:
-#     s3.upload_fileobj(file, "s3-raw-lab-tracksecure", "dados_capturados.csv")
+# Executar o comando 'tasklist' e capturar a saída - este comando é o mesmo do CMD - sistema operacional
+result = subprocess.run(['tasklist'], capture_output=True, text=True).stdout
+
+print(result)
+
+result = re.sub(r" K(?=\n)", "", result) # Expressão Regular para remover os "K" no uso de memória
+result = re.sub(r" (?![0-9 ]|(Services)|(Console))", "_", result) # Expressão Regular para substituir espaços de palavras por '_'
+
+lines = result.splitlines()[3:]
+
+with open('tasks3.csv', 'w', newline='', encoding='utf-8') as csvfile:
+    csv_writer = csv.writer(csvfile)
+    csv_writer.writerow(['Nome_da_Imagem', 'PID', 'Nome_da_Sessao', 'Sessao#', 'Uso_de_memoria (K)'])
+   
+    for line in lines:
+        columns = line.split()
+        csv_writer.writerow(columns)
+
+with open("tasks3.csv", "rb") as file:
+    s3.upload_fileobj(file, "s3-raw-lab-tracksecure", "tasks3.csv")
