@@ -16,7 +16,7 @@ import mysql.connector
 nomeMaquina = gethostname()
 macAddress = gma()
 
-db_connection = mysql.connector.connect(host='localhost', user='aluno', password='sptech', database='TrackSecure')
+db_connection = mysql.connector.connect(host='', user='', password='', database='')
 cursor = db_connection.cursor()
 
 json_py = []
