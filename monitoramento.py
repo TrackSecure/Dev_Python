@@ -15,7 +15,6 @@ import mysql.connector
 
 nomeMaquina = gethostname()
 macAddress = gma()
-print(macAddress)
 
 db_connection = mysql.connector.connect(host='localhost', user='aluno', password='sptech', database='TrackSecure')
 cursor = db_connection.cursor()
