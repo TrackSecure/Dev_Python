@@ -10,15 +10,22 @@ from requests import HTTPError
 import subprocess
 import csv
 import re
+from getmac import get_mac_address as gma
+import mysql.connector
 
 nomeMaquina = gethostname()
+macAddress = gma()
+print(macAddress)
+
+db_connection = mysql.connector.connect(host='localhost', user='aluno', password='sptech', database='TrackSecure')
+cursor = db_connection.cursor()
 
 json_py = []
 
 jira =Jira(
     url = "https://sptech-team-it55r942.atlassian.net",
     username = "felipe.patroni@sptech.school",
-    password = "" #TOKEN
+    password = "ATATT3xFfGF0WayRVVUjUbJxeSD1Q_0MjvKce6Bles8Ieoff_3cNwY2BVggsmZgimVQIL7OKbzdYcwN2GCRnRLcsKaTAAVPqImkn39plfxmg3dkhNlPZyqS906G3WmcByGu1kcgSQl7LpyMUIi2yl61SVbdsRhdTOfi998z9DWUdj-0ev5Mg1SM=BCE21B38" #TOKEN
 )
 
 while (True):
@@ -44,7 +51,10 @@ while (True):
             ram_used = (psutil.virtual_memory().used) #/ pow(10,9)
             ram_percent = psutil.virtual_memory().percent
 
-            # Cria uma mensagem, com valores arredondados e printa essa mensagem
+            sql = "INSERT INTO Registro (porcentagemProcessador, porcentagemMemoria, porcentagemDisco, freqProcessador, memoriaUsada, discoUsado, fkServidor) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+            values = (cpu_porcent, ram_percent, disc_percent, cpu_speed, ram_used, disc_used, macAddress)
+            cursor.execute(sql, values)
+            db_connection.commit()
 
             mensagem = f"""
                       {i + 1}º captura   
@@ -140,6 +150,10 @@ while (True):
                         }
                     }
                 )
+                sql = "INSERT INTO Alerta (tipo, descricao, fkServidor) VALUES (%s, %s, %s)"
+                values = (priority_disco, description_disco, macAddress)
+                cursor.execute(sql, values)
+                db_connection.commit()
             if (problema_ram):
                 jira.issue_create(
                     fields={
@@ -155,7 +169,11 @@ while (True):
                             'name': priority_ram
                         }
                     }
-                )   
+                )
+                sql = "INSERT INTO Alerta (tipo, descricao, fkServidor) VALUES (%s, %s, %s)"
+                values = (priority_ram, description_ram, macAddress)
+                cursor.execute(sql, values)
+                db_connection.commit()   
             if (problema_cpu):
                 jira.issue_create(
                     fields={
@@ -171,7 +189,11 @@ while (True):
                             'name': priority_cpu
                         }
                     }
-                )    
+                )
+                sql = "INSERT INTO Alerta (tipo, descricao, fkServidor) VALUES (%s, %s, %s)"
+                values = (priority_cpu, description_cpu, macAddress)
+                cursor.execute(sql, values)
+                db_connection.commit()    
         except HTTPError as e :
             print(e.response.text)
 
@@ -188,8 +210,8 @@ with open(filename, "w") as arquivojson:
     json.dump(json_py, arquivojson)
 
 s3 = boto3.client('s3')
-with open("dados_capturados.json", "rb") as file:
-    s3.upload_fileobj(file, "s3-raw-lab-tracksecure", "dados_capturados.json")
+with open(filename, "rb") as file:
+    s3.upload_fileobj(file, "s3-raw-lab-tracksecure", filename)
 
 # Executar o comando 'tasklist' e capturar a saída - este comando é o mesmo do CMD - sistema operacional
 result = subprocess.run(['tasklist'], capture_output=True, text=True).stdout
