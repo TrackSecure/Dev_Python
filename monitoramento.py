@@ -25,7 +25,7 @@ json_py = []
 jira =Jira(
     url = "https://sptech-team-it55r942.atlassian.net",
     username = "felipe.patroni@sptech.school",
-    password = "ATATT3xFfGF0WayRVVUjUbJxeSD1Q_0MjvKce6Bles8Ieoff_3cNwY2BVggsmZgimVQIL7OKbzdYcwN2GCRnRLcsKaTAAVPqImkn39plfxmg3dkhNlPZyqS906G3WmcByGu1kcgSQl7LpyMUIi2yl61SVbdsRhdTOfi998z9DWUdj-0ev5Mg1SM=BCE21B38" #TOKEN
+    password = "" #TOKEN
 )
 
 while (True):
