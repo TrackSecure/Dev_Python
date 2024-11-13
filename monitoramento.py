@@ -14,9 +14,10 @@ from getmac import get_mac_address as gma
 import mysql.connector
 
 nomeMaquina = gethostname()
-macAddress = gma()
+# macAddress = gma()
+# É necessário descomentar a linha acima na implementação definitiva
 
-db_connection = mysql.connector.connect(host='', user='', password='', database='')
+db_connection = mysql.connector.connect(host='localhost', user='', password='', database='TrackSecure')
 cursor = db_connection.cursor()
 
 json_py = []
@@ -51,7 +52,8 @@ while (True):
             ram_percent = psutil.virtual_memory().percent
 
             sql = "INSERT INTO Registro (porcentagemProcessador, porcentagemMemoria, porcentagemDisco, freqProcessador, memoriaUsada, discoUsado, fkServidor) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-            values = (cpu_porcent, ram_percent, disc_percent, cpu_speed, ram_used, disc_used, macAddress)
+            # values = (cpu_porcent, ram_percent, disc_percent, cpu_speed, ram_used, disc_used, macAddress)
+            values = (cpu_porcent, ram_percent, disc_percent, cpu_speed, ram_used, disc_used, "00:00:00:00:00:00") # Linha com MacAddress para teste
             cursor.execute(sql, values)
             db_connection.commit()
 
