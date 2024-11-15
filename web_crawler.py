@@ -13,8 +13,6 @@ def lambda_handler(event, context):
     bucket_name = 's3-raw-lab-tracksecure'  # Substitua pelo nome do seu bucket S3
 
     try:
-        # Parte 1: Extrair dados do site da ANAC
-        #url = "https://sistemas.anac.gov.br/dadosabertos/Voos%20e%20opera%C3%A7%C3%B5es%a%C3%A9reas/Dados%20do%20consumidor.gov/dadosconsumidor2023.json"
         url ="https://transparencia.metrosp.com.br/sites/default/files/Entrada%20de%20Passageiros%20por%20Esta%C3%A7%C3%A3o%20-%20M%C3%A9dia%20Dias%20%C3%9Ateis%20-%202024_4.csv"
         response = requests.get(url)
         response.raise_for_status()
