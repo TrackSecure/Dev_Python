@@ -17,7 +17,7 @@ nomeMaquina = gethostname()
 # macAddress = gma()
 # É necessário descomentar a linha acima na implementação definitiva
 
-db_connection = mysql.connector.connect(host='localhost', user='', password='', database='TrackSecure')
+db_connection = mysql.connector.connect(host='localhost', user='aluno', password='sptech', database='TrackSecure')
 cursor = db_connection.cursor()
 
 json_py = []
@@ -29,8 +29,10 @@ jira =Jira(
 )
 
 while (True):
-        qtdCapturas = int(input(("Quantas capturas deseja fazer? \n ")))
-        intervaloTempo = int(input(("Qual o intervalo de tempo em segundos: ")))
+        # qtdCapturas = int(input(("Quantas capturas deseja fazer? \n ")))
+        qtdCapturas = 10
+        # intervaloTempo = int(input(("Qual o intervalo de tempo em segundos: ")))
+        intervaloTempo = 3
 
         for i in range(qtdCapturas):
 
@@ -80,7 +82,8 @@ while (True):
 
             time.sleep(intervaloTempo)
 
-        resposta = input("Deseja continuar? s/n: ")
+        # resposta = input("Deseja continuar? s/n: ")
+        resposta = "n"
 
         problema_disco = False
         problema_ram = False
