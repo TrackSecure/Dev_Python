@@ -208,17 +208,6 @@ while (True):
         else:
             break
 
-data = str(datetime.datetime.now()).replace(" ", "_") 
-data = data.replace(":", "_")
-filename = f"dados_capturados_{data}_{nomeMaquina}.json"
-
-with open(filename, "w") as arquivojson:
-    json.dump(json_py, arquivojson)
-
-s3 = boto3.client('s3')
-with open(filename, "rb") as file:
-    s3.upload_fileobj(file, "s3-raw-lab-tracksecure", filename)
-
 # Executar o comando 'tasklist' e capturar a saída - este comando é o mesmo do CMD - sistema operacional
 result = subprocess.run(['tasklist'], capture_output=True, text=True).stdout
 
@@ -229,13 +218,30 @@ result = re.sub(r" (?![0-9 ]|(Services)|(Console))", "_", result) # Expressão R
 
 lines = result.splitlines()[3:]
 
-with open('tasks3.csv', 'w', newline='', encoding='utf-8') as csvfile:
-    csv_writer = csv.writer(csvfile)
-    csv_writer.writerow(['Nome_da_Imagem', 'PID', 'Nome_da_Sessao', 'Sessao#', 'Uso_de_memoria (K)'])
-   
-    for line in lines:
+for line in lines:
         columns = line.split()
-        csv_writer.writerow(columns)
+        sql = f"INSERT INTO Processo (nome, usoMemoria, fkServidor) VALUES ('{columns[0]}', {columns[4]}, '{macAddress}')"
+        cursor.execute(sql)
+        db_connection.commit()
 
-with open("tasks3.csv", "rb") as file:
-    s3.upload_fileobj(file, "s3-raw-lab-tracksecure", "tasks3.csv")
+# with open('tasks3.csv', 'w', newline='', encoding='utf-8') as csvfile:
+#     csv_writer = csv.writer(csvfile)
+#     csv_writer.writerow(['Nome_da_Imagem', 'PID', 'Nome_da_Sessao', 'Sessao#', 'Uso_de_memoria (K)'])
+   
+#     for line in lines:
+#         columns = line.split()
+#         csv_writer.writerow(columns)
+
+# with open("tasks3.csv", "rb") as file:
+#     s3.upload_fileobj(file, "s3-raw-lab-tracksecure", "tasks3.csv")
+
+# data = str(datetime.datetime.now()).replace(" ", "_") 
+# data = data.replace(":", "_")
+# filename = f"dados_capturados_{data}_{nomeMaquina}.json"
+
+# with open(filename, "w") as arquivojson:
+#     json.dump(json_py, arquivojson)
+
+# s3 = boto3.client('s3')
+# with open(filename, "rb") as file:
+#     s3.upload_fileobj(file, "s3-raw-lab-tracksecure", filename)
