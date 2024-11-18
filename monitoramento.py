@@ -13,6 +13,9 @@ import re
 from getmac import get_mac_address as gma
 import mysql.connector
 
+teste = psutil.net_io_counters()
+print(teste.packets_recv)
+
 nomeMaquina = gethostname()
 # macAddress = gma()
 macAddress = "00:00:00:00:00:00"
@@ -53,10 +56,10 @@ while (True):
 
             ram_used = (psutil.virtual_memory().used) #/ pow(10,9)
             ram_percent = psutil.virtual_memory().percent
+            pacotes = psutil.net_io_counters().packets_recv
 
-            sql = "INSERT INTO Registro (porcentagemProcessador, porcentagemMemoria, porcentagemDisco, freqProcessador, memoriaUsada, discoUsado, fkServidor) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-            # values = (cpu_porcent, ram_percent, disc_percent, cpu_speed, ram_used, disc_used, macAddress)
-            values = (cpu_porcent, ram_percent, disc_percent, cpu_speed, ram_used, disc_used, macAddress) # Linha com MacAddress para teste
+            sql = "INSERT INTO Registro (porcentagemProcessador, porcentagemMemoria, porcentagemDisco, freqProcessador, memoriaUsada, discoUsado, pacotesRecebidos, fkServidor) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+            values = (cpu_porcent, ram_percent, disc_percent, cpu_speed, ram_used, disc_used, pacotes, macAddress) # Linha com MacAddress para teste
             cursor.execute(sql, values)
             db_connection.commit()
 
@@ -70,6 +73,7 @@ while (True):
                       Uso da memória RAM: {ram_percent} %
                       Uso do disco: {disc_used} Bytes
                       Porcentagem Disco usada: {disc_percent} %
+                      Pacotes recebidos: {pacotes}
                       """
                       # É necessário arredondar para duas casas na ETL Java
             
