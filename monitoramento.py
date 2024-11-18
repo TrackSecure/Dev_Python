@@ -13,9 +13,6 @@ import re
 from getmac import get_mac_address as gma
 import mysql.connector
 
-teste = psutil.net_io_counters()
-print(teste.packets_recv)
-
 nomeMaquina = gethostname()
 # macAddress = gma()
 macAddress = "00:00:00:00:00:00"
