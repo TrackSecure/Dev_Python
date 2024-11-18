@@ -15,6 +15,7 @@ import mysql.connector
 
 nomeMaquina = gethostname()
 # macAddress = gma()
+macAddress = "00:00:00:00:00:00"
 # É necessário descomentar a linha acima na implementação definitiva
 
 db_connection = mysql.connector.connect(host='localhost', user='aluno', password='sptech', database='TrackSecure')
@@ -32,7 +33,7 @@ while (True):
         # qtdCapturas = int(input(("Quantas capturas deseja fazer? \n ")))
         qtdCapturas = 10
         # intervaloTempo = int(input(("Qual o intervalo de tempo em segundos: ")))
-        intervaloTempo = 3
+        intervaloTempo = 1
 
         for i in range(qtdCapturas):
 
@@ -55,7 +56,7 @@ while (True):
 
             sql = "INSERT INTO Registro (porcentagemProcessador, porcentagemMemoria, porcentagemDisco, freqProcessador, memoriaUsada, discoUsado, fkServidor) VALUES (%s, %s, %s, %s, %s, %s, %s)"
             # values = (cpu_porcent, ram_percent, disc_percent, cpu_speed, ram_used, disc_used, macAddress)
-            values = (cpu_porcent, ram_percent, disc_percent, cpu_speed, ram_used, disc_used, "00:00:00:00:00:00") # Linha com MacAddress para teste
+            values = (cpu_porcent, ram_percent, disc_percent, cpu_speed, ram_used, disc_used, macAddress) # Linha com MacAddress para teste
             cursor.execute(sql, values)
             db_connection.commit()
 
@@ -139,61 +140,61 @@ while (True):
         
         try:
             if (problema_disco):
-                jira.issue_create(
-                    fields={
-                        'project': {
-                            'key': 'TRAC' #SIGLA
-                        },
-                        'summary': summary_disco, #titulo do chamado
-                        'description': description_disco, #descrição
-                        'issuetype': {
-                            "name": "Task" #Tipo de chamado 
-                        },
-                        'priority': {
-                            'name': priority_disco
-                        }
-                    }
-                )
+                # jira.issue_create(
+                #     fields={
+                #         'project': {
+                #             'key': 'TRAC' #SIGLA
+                #         },
+                #         'summary': summary_disco, #titulo do chamado
+                #         'description': description_disco, #descrição
+                #         'issuetype': {
+                #             "name": "Task" #Tipo de chamado 
+                #         },
+                #         'priority': {
+                #             'name': priority_disco
+                #         }
+                #     }
+                # )
                 sql = "INSERT INTO Alerta (tipo, descricao, fkServidor) VALUES (%s, %s, %s)"
                 values = (priority_disco, description_disco, macAddress)
                 cursor.execute(sql, values)
                 db_connection.commit()
             if (problema_ram):
-                jira.issue_create(
-                    fields={
-                        'project': {
-                            'key': 'TRAC' #SIGLA
-                        },
-                        'summary': summary_ram, #titulo do chamado
-                        'description': description_ram, #descrição
-                        'issuetype': {
-                            "name": "Task" #Tipo de chamado 
-                        },
-                        'priority': {
-                            'name': priority_ram
-                        }
-                    }
-                )
+                # jira.issue_create(
+                #     fields={
+                #         'project': {
+                #             'key': 'TRAC' #SIGLA
+                #         },
+                #         'summary': summary_ram, #titulo do chamado
+                #         'description': description_ram, #descrição
+                #         'issuetype': {
+                #             "name": "Task" #Tipo de chamado 
+                #         },
+                #         'priority': {
+                #             'name': priority_ram
+                #         }
+                #     }
+                # )
                 sql = "INSERT INTO Alerta (tipo, descricao, fkServidor) VALUES (%s, %s, %s)"
                 values = (priority_ram, description_ram, macAddress)
                 cursor.execute(sql, values)
                 db_connection.commit()   
             if (problema_cpu):
-                jira.issue_create(
-                    fields={
-                        'project': {
-                            'key': 'TRAC' #SIGLA
-                        },
-                        'summary': summary_cpu, #titulo do chamado
-                        'description': description_cpu, #descrição
-                        'issuetype': {
-                            "name": "Task" #Tipo de chamado 
-                        },
-                        'priority': {
-                            'name': priority_cpu
-                        }
-                    }
-                )
+                # jira.issue_create(
+                #     fields={
+                #         'project': {
+                #             'key': 'TRAC' #SIGLA
+                #         },
+                #         'summary': summary_cpu, #titulo do chamado
+                #         'description': description_cpu, #descrição
+                #         'issuetype': {
+                #             "name": "Task" #Tipo de chamado 
+                #         },
+                #         'priority': {
+                #             'name': priority_cpu
+                #         }
+                #     }
+                # )
                 sql = "INSERT INTO Alerta (tipo, descricao, fkServidor) VALUES (%s, %s, %s)"
                 values = (priority_cpu, description_cpu, macAddress)
                 cursor.execute(sql, values)
