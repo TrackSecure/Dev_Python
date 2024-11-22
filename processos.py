@@ -25,6 +25,11 @@ for line in lines:
         
         memory_usage = memory_usage.replace(',', '.')
             
-        sql = f"INSERT INTO Processo (nome, usoMemoria, fkServidor) VALUES ('{process_name}', {memory_usage}, '{macAddress}')"
-        cursor.execute(sql)
-        db_connection.commit()
+        memory_usage_value = float(memory_usage)
+        
+        if memory_usage_value > 0.0:
+          sql = f"INSERT INTO Processo (nome, usoMemoria, fkServidor) VALUES ('{process_name}', {memory_usage_value}, '{macAddress}')"
+          cursor.execute(sql)
+          db_connection.commit()
+          
+
