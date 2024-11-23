@@ -13,7 +13,7 @@ def lambda_handler(event, context):
     bucket_name = 's3-raw-lab-tracksecure'  # Substitua pelo nome do seu bucket S3
 
     try:
-        url =r"https://transparencia.metrosp.com.br/node/5273/download"
+        url =r"https://transparencia.metrosp.com.br/node/5275/download"
         response = requests.get(url)
         response.raise_for_status()
 
