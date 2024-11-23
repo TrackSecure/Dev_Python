@@ -3,19 +3,19 @@ import time
 import platform
 from socket import gethostname
 import json
-import boto3
+# import boto3
 import datetime
 from atlassian import Jira
 from requests import HTTPError
 import subprocess
-import csv
+# import csv
 import re
 from getmac import get_mac_address as gma
 import mysql.connector
 
 nomeMaquina = gethostname()
 # macAddress = gma()
-macAddress = "00:00:00:00:00:00"
+macAddress = '00:00:00:00:00:00'
 # É necessário descomentar a linha acima na implementação definitiva
 
 db_connection = mysql.connector.connect(host='localhost', user='aluno', password='sptech', database='TrackSecure')
@@ -23,15 +23,15 @@ cursor = db_connection.cursor()
 
 json_py = []
 
-jira =Jira(
-    url = "https://sptech-team-it55r942.atlassian.net",
-    username = "felipe.patroni@sptech.school",
-    password = "" #TOKEN
-)
+# jira =Jira(
+#     url = "https://sptech-team-it55r942.atlassian.net",
+#     username = "felipe.patroni@sptech.school",
+#     password = "" #TOKEN
+# )
 
 while (True):
         # qtdCapturas = int(input(("Quantas capturas deseja fazer? \n ")))
-        qtdCapturas = 10
+        qtdCapturas = 1
         # intervaloTempo = int(input(("Qual o intervalo de tempo em segundos: ")))
         intervaloTempo = 1
 
@@ -218,11 +218,35 @@ result = re.sub(r" (?![0-9 ]|(Services)|(Console))", "_", result) # Expressão R
 
 lines = result.splitlines()[3:]
 
+processos = {}
+
 for line in lines:
-        columns = line.split()
-        sql = f"INSERT INTO Processo (nome, usoMemoria, fkServidor) VALUES ('{columns[0]}', {columns[4]}, '{macAddress}')"
-        cursor.execute(sql)
-        db_connection.commit()
+    # Divide a linha em colunas
+    columns = line.split()
+    
+    # Extrai os dados do processo
+    nome_processo = columns[0]
+    uso_memoria = float(columns[4])
+    
+
+    
+    
+    # Acumula a memória no dicionário
+    if nome_processo in processos:
+        processos[nome_processo] += uso_memoria
+    else:
+        processos[nome_processo] = uso_memoria
+
+# Insere todos os dados do dicionário no banco de dados
+for nome_processo, uso_memoria in processos.items():
+    sql = "INSERT INTO Processo (nome, usoMemoria, fkServidor) VALUES (%s, %s, %s)"
+    cursor.execute(sql, (nome_processo, uso_memoria, macAddress))
+    print(nome_processo, uso_memoria)
+    
+
+# Confirma a transação
+
+db_connection.commit()
 
 # with open('tasks3.csv', 'w', newline='', encoding='utf-8') as csvfile:
 #     csv_writer = csv.writer(csvfile)
