@@ -15,6 +15,8 @@ print(result)
 # Remover as primeiras linhas que contêm informações de cabeçalho e outras não relevantes
 lines = result.splitlines()[7:]  
 
+processos = {}
+
 # Para cada linha de processo capturada
 for line in lines:
     columns = re.split(r'\s+', line)  
@@ -25,11 +27,19 @@ for line in lines:
         
         memory_usage = memory_usage.replace(',', '.')
             
-        memory_usage_value = float(memory_usage)
+        memory_usage_value = round(float(memory_usage), 2)
+
+        if process_name in processos:
+          processos[process_name] += memory_usage_value
+        else:
+          processos[process_name] = memory_usage_value
         
-        if memory_usage_value > 0.0:
-          sql = f"INSERT INTO Processo (nome, usoMemoria, fkServidor) VALUES ('{process_name}', {memory_usage_value}, '{macAddress}')"
-          cursor.execute(sql)
-          db_connection.commit()
+for process_name, memory_usage_value in processos.items():
+  if memory_usage_value > 0.0:
+    sql = f"INSERT INTO Processo (nome, usoMemoria, fkServidor) VALUES ('{process_name}', {memory_usage_value}, '{macAddress}')"
+    
+    print(process_name, memory_usage_value)
+    cursor.execute(sql)
+    db_connection.commit()
           
 

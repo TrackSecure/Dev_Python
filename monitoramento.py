@@ -31,7 +31,7 @@ json_py = []
 
 while (True):
         # qtdCapturas = int(input(("Quantas capturas deseja fazer? \n ")))
-        qtdCapturas = 1
+        qtdCapturas = 3
         # intervaloTempo = int(input(("Qual o intervalo de tempo em segundos: ")))
         intervaloTempo = 1
 
@@ -208,45 +208,40 @@ while (True):
         else:
             break
 
-# Executar o comando 'tasklist' e capturar a saída - este comando é o mesmo do CMD - sistema operacional
-result = subprocess.run(['tasklist'], capture_output=True, text=True).stdout
+# Executar o comando 'top' e capturar a saída
+result = subprocess.run(['top', '-b', '-n', '1'], capture_output=True, text=True).stdout
 
 print(result)
 
-result = re.sub(r" K(?=\n)", "", result) # Expressão Regular para remover os "K" no uso de memória
-result = re.sub(r" (?![0-9 ]|(Services)|(Console))", "_", result) # Expressão Regular para substituir espaços de palavras por '_'
-
-lines = result.splitlines()[3:]
+# Remover as primeiras linhas que contêm informações de cabeçalho e outras não relevantes
+lines = result.splitlines()[7:]  
 
 processos = {}
 
+# Para cada linha de processo capturada
 for line in lines:
-    # Divide a linha em colunas
-    columns = line.split()
-    
-    # Extrai os dados do processo
-    nome_processo = columns[0]
-    uso_memoria = float(columns[4])
-    
+    columns = re.split(r'\s+', line)  
 
-    
-    
-    # Acumula a memória no dicionário
-    if nome_processo in processos:
-        processos[nome_processo] += uso_memoria
-    else:
-        processos[nome_processo] = uso_memoria
+    if len(columns) > 12:
+        process_name = columns[12]
+        memory_usage = columns[10]  
+        
+        memory_usage = memory_usage.replace(',', '.')
+            
+        memory_usage_value = round(float(memory_usage), 2)
 
-# Insere todos os dados do dicionário no banco de dados
-for nome_processo, uso_memoria in processos.items():
-    sql = "INSERT INTO Processo (nome, usoMemoria, fkServidor) VALUES (%s, %s, %s)"
-    cursor.execute(sql, (nome_processo, uso_memoria, macAddress))
-    print(nome_processo, uso_memoria)
+        if process_name in processos:
+          processos[process_name] += memory_usage_value
+        else:
+          processos[process_name] = memory_usage_value
+        
+for process_name, memory_usage_value in processos.items():
+  if memory_usage_value > 0.0:
+    sql = f"INSERT INTO Processo (nome, usoMemoria, fkServidor) VALUES ('{process_name}', {memory_usage_value}, '{macAddress}')"
     
-
-# Confirma a transação
-
-db_connection.commit()
+    print(process_name, memory_usage_value)
+    cursor.execute(sql)
+    db_connection.commit()
 
 # with open('tasks3.csv', 'w', newline='', encoding='utf-8') as csvfile:
 #     csv_writer = csv.writer(csvfile)
