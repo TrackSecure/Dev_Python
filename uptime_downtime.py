@@ -8,7 +8,7 @@ if (platform.system().lower()=="windows"):
 else:
     param = "-c 1"
 
-conector_db = mysql.connector.connect(host='localhost', port=3306, user="root", password="tracksecure", database="TrackSecure")
+conector_db = mysql.connector.connect(host='localhost', port=3307, user="root", password="tracksecure", database="TrackSecure")
 cursor = conector_db.cursor()
 
 while(True):

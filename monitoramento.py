@@ -3,12 +3,11 @@ import time
 import platform
 from socket import gethostname
 import json
-# import boto3
+import boto3
 import datetime
 from atlassian import Jira
 from requests import HTTPError
 import subprocess
-# import csv
 import re
 from getmac import get_mac_address as gma
 import mysql.connector
@@ -18,7 +17,7 @@ nomeMaquina = gethostname()
 macAddress = '00:00:00:00:00:00'
 # É necessário descomentar a linha acima na implementação definitiva
 
-db_connection = mysql.connector.connect(host='localhost', user='aluno', password='sptech', database='TrackSecure')
+db_connection = mysql.connector.connect(host='localhost', user='aluno', password='tracksecure', database='TrackSecure')
 cursor = db_connection.cursor()
 
 json_py = []
@@ -141,61 +140,61 @@ while (True):
         
         try:
             if (problema_disco):
-                # jira.issue_create(
-                #     fields={
-                #         'project': {
-                #             'key': 'TRAC' #SIGLA
-                #         },
-                #         'summary': summary_disco, #titulo do chamado
-                #         'description': description_disco, #descrição
-                #         'issuetype': {
-                #             "name": "Task" #Tipo de chamado 
-                #         },
-                #         'priority': {
-                #             'name': priority_disco
-                #         }
-                #     }
-                # )
+                jira.issue_create(
+                    fields={
+                        'project': {
+                            'key': 'TRAC' #SIGLA
+                        },
+                        'summary': summary_disco, #titulo do chamado
+                        'description': description_disco, #descrição
+                        'issuetype': {
+                            "name": "Task" #Tipo de chamado 
+                        },
+                        'priority': {
+                            'name': priority_disco
+                        }
+                    }
+                )
                 sql = "INSERT INTO Alerta (tipo, descricao, fkServidor) VALUES (%s, %s, %s)"
                 values = (priority_disco, description_disco, macAddress)
                 cursor.execute(sql, values)
                 db_connection.commit()
             if (problema_ram):
-                # jira.issue_create(
-                #     fields={
-                #         'project': {
-                #             'key': 'TRAC' #SIGLA
-                #         },
-                #         'summary': summary_ram, #titulo do chamado
-                #         'description': description_ram, #descrição
-                #         'issuetype': {
-                #             "name": "Task" #Tipo de chamado 
-                #         },
-                #         'priority': {
-                #             'name': priority_ram
-                #         }
-                #     }
-                # )
+                jira.issue_create(
+                    fields={
+                        'project': {
+                            'key': 'TRAC' #SIGLA
+                        },
+                        'summary': summary_ram, #titulo do chamado
+                        'description': description_ram, #descrição
+                        'issuetype': {
+                            "name": "Task" #Tipo de chamado 
+                        },
+                        'priority': {
+                            'name': priority_ram
+                        }
+                    }
+                )
                 sql = "INSERT INTO Alerta (tipo, descricao, fkServidor) VALUES (%s, %s, %s)"
                 values = (priority_ram, description_ram, macAddress)
                 cursor.execute(sql, values)
                 db_connection.commit()   
             if (problema_cpu):
-                # jira.issue_create(
-                #     fields={
-                #         'project': {
-                #             'key': 'TRAC' #SIGLA
-                #         },
-                #         'summary': summary_cpu, #titulo do chamado
-                #         'description': description_cpu, #descrição
-                #         'issuetype': {
-                #             "name": "Task" #Tipo de chamado 
-                #         },
-                #         'priority': {
-                #             'name': priority_cpu
-                #         }
-                #     }
-                # )
+                jira.issue_create(
+                    fields={
+                        'project': {
+                            'key': 'TRAC' #SIGLA
+                        },
+                        'summary': summary_cpu, #titulo do chamado
+                        'description': description_cpu, #descrição
+                        'issuetype': {
+                            "name": "Task" #Tipo de chamado 
+                        },
+                        'priority': {
+                            'name': priority_cpu
+                        }
+                    }
+                )
                 sql = "INSERT INTO Alerta (tipo, descricao, fkServidor) VALUES (%s, %s, %s)"
                 values = (priority_cpu, description_cpu, macAddress)
                 cursor.execute(sql, values)
@@ -243,24 +242,13 @@ for process_name, memory_usage_value in processos.items():
     cursor.execute(sql)
     db_connection.commit()
 
-# with open('tasks3.csv', 'w', newline='', encoding='utf-8') as csvfile:
-#     csv_writer = csv.writer(csvfile)
-#     csv_writer.writerow(['Nome_da_Imagem', 'PID', 'Nome_da_Sessao', 'Sessao#', 'Uso_de_memoria (K)'])
-   
-#     for line in lines:
-#         columns = line.split()
-#         csv_writer.writerow(columns)
+data = str(datetime.datetime.now()).replace(" ", "_") 
+data = data.replace(":", "_")
+filename = f"dados_capturados_{data}_{nomeMaquina}.json"
 
-# with open("tasks3.csv", "rb") as file:
-#     s3.upload_fileobj(file, "s3-raw-lab-tracksecure", "tasks3.csv")
+with open(filename, "w") as arquivojson:
+    json.dump(json_py, arquivojson)
 
-# data = str(datetime.datetime.now()).replace(" ", "_") 
-# data = data.replace(":", "_")
-# filename = f"dados_capturados_{data}_{nomeMaquina}.json"
-
-# with open(filename, "w") as arquivojson:
-#     json.dump(json_py, arquivojson)
-
-# s3 = boto3.client('s3')
-# with open(filename, "rb") as file:
-#     s3.upload_fileobj(file, "s3-raw-lab-tracksecure", filename)
+s3 = boto3.client('s3')
+with open(filename, "rb") as file:
+    s3.upload_fileobj(file, "s3-raw-lab-tracksecure", filename)
