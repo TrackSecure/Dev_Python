@@ -2,4 +2,4 @@ FROM python:latest
 WORKDIR /
 COPY ./src/ .
 RUN pip install mysql-connector-python
-CMD ["python", "./uptime_downtime.py"]
+CMD ["python3", "./src/uptime_downtime.py"]
