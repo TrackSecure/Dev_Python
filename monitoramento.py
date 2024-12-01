@@ -55,7 +55,7 @@ while (True):
         db_connection.commit()
 
         mensagem = f"""
-                    {i + 1}º captura   
+                    {contador + 1}º captura   
                     Máquina: {nomeMaquina}
                     SO: {so}
                     Uso da CPU: {cpu_porcent}%
@@ -241,3 +241,4 @@ while (True):
                     db_connection.commit()
 
         time.sleep(3)
+        contador += 1
