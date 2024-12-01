@@ -13,78 +13,66 @@ from getmac import get_mac_address as gma
 import mysql.connector
 
 nomeMaquina = gethostname()
-# macAddress = gma()
-macAddress = '00:00:00:00:00:00'
+macAddress = gma()
+# macAddress = '00:00:00:00:00:00'
 # É necessário descomentar a linha acima na implementação definitiva
 
-db_connection = mysql.connector.connect(host='localhost', user='aluno', password='tracksecure', database='TrackSecure')
+db_connection = mysql.connector.connect(host='', port=3307, user='root', password='tracksecure', database='TrackSecure')
 cursor = db_connection.cursor()
 
 json_py = []
 
-# jira =Jira(
-#     url = "https://sptech-team-it55r942.atlassian.net",
-#     username = "felipe.patroni@sptech.school",
-#     password = "" #TOKEN
-# )
+jira =Jira(
+    url = "https://sptech-team-it55r942.atlassian.net",
+    username = "felipe.patroni@sptech.school",
+    password = "" #TOKEN
+)
+
+contador = 0
 
 while (True):
-        # qtdCapturas = int(input(("Quantas capturas deseja fazer? \n ")))
-        qtdCapturas = 3
-        # intervaloTempo = int(input(("Qual o intervalo de tempo em segundos: ")))
-        intervaloTempo = 1
-
-        for i in range(qtdCapturas):
-
-            cpu_porcent = psutil.cpu_percent(interval=1)
-            cpu_speed = psutil.cpu_freq().current #/ pow(10,3)
+        cpu_porcent = psutil.cpu_percent(interval=1)
+        cpu_speed = psutil.cpu_freq().current #/ pow(10,3)
             
-            so = platform.system()
+        so = platform.system()
 
-            if (so == 'Windows'):
-                # DIRETÓRIO PARA WINDOWS    
-                disc_used = psutil.disk_usage('C:\\').used #/ pow(10,9)
-                disc_percent = psutil.disk_usage('C:\\').percent
-            elif (so == 'Linux'):
-                # DIRETÓRIO PARA LINUX
-                disc_used = psutil.disk_usage('/bin').used #/ pow(10,9)
-                disc_percent = psutil.disk_usage('/bin').percent    
+        if (so == 'Windows'):
+            # DIRETÓRIO PARA WINDOWS    
+            disc_used = psutil.disk_usage('C:\\').used #/ pow(10,9)
+            disc_percent = psutil.disk_usage('C:\\').percent
+        elif (so == 'Linux'):
+            # DIRETÓRIO PARA LINUX
+            disc_used = psutil.disk_usage('/bin').used #/ pow(10,9)
+            disc_percent = psutil.disk_usage('/bin').percent    
 
-            ram_used = (psutil.virtual_memory().used) #/ pow(10,9)
-            ram_percent = psutil.virtual_memory().percent
-            pacotes = psutil.net_io_counters().packets_recv
+        ram_used = (psutil.virtual_memory().used) #/ pow(10,9)
+        ram_percent = psutil.virtual_memory().percent
+        pacotes = psutil.net_io_counters().packets_recv
 
-            sql = "INSERT INTO Registro (porcentagemProcessador, porcentagemMemoria, porcentagemDisco, freqProcessador, memoriaUsada, discoUsado, pacotesRecebidos, fkServidor) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-            values = (cpu_porcent, ram_percent, disc_percent, cpu_speed, ram_used, disc_used, pacotes, macAddress) # Linha com MacAddress para teste
-            cursor.execute(sql, values)
-            db_connection.commit()
+        sql = "INSERT INTO Registro (porcentagemProcessador, porcentagemMemoria, porcentagemDisco, freqProcessador, memoriaUsada, discoUsado, pacotesRecebidos, fkServidor) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+        values = (cpu_porcent, ram_percent, disc_percent, cpu_speed, ram_used, disc_used, pacotes, macAddress) # Linha com MacAddress para teste
+        cursor.execute(sql, values)
+        db_connection.commit()
 
-            mensagem = f"""
-                      {i + 1}º captura   
-                      Máquina: {nomeMaquina}
-                      SO: {so}
-                      Uso da CPU: {cpu_porcent}%
-                      Frequência de Uso da CPU: {cpu_speed} MHz
-                      Uso em GB RAM: {ram_used} Bytes
-                      Uso da memória RAM: {ram_percent} %
-                      Uso do disco: {disc_used} Bytes
-                      Porcentagem Disco usada: {disc_percent} %
-                      Pacotes recebidos: {pacotes}
-                      """
-                      # É necessário arredondar para duas casas na ETL Java
+        mensagem = f"""
+                    {i + 1}º captura   
+                    Máquina: {nomeMaquina}
+                    SO: {so}
+                    Uso da CPU: {cpu_porcent}%
+                    Frequência de Uso da CPU: {cpu_speed} MHz
+                    Uso em GB RAM: {ram_used} Bytes
+                    Uso da memória RAM: {ram_percent} %
+                    Uso do disco: {disc_used} Bytes
+                    Porcentagem Disco usada: {disc_percent} %
+                    Pacotes recebidos: {pacotes}
+                    """
+                    # É necessário arredondar para duas casas na ETL Java
             
-            print(mensagem)
+        print(mensagem)
             
-            linha = {"Maquina":nomeMaquina, "SO":so, "PorcentCPU":cpu_porcent, "FreqCPU":cpu_speed, 
-            "UsoRAM":ram_used, "PorcentRAM":ram_percent, "UsoDisco":disc_used, "PorcentDisco":disc_percent}
-            json_py.append(linha)
-
-            # Coloca um intervalo de tempo a captura 
-
-            time.sleep(intervaloTempo)
-
-        # resposta = input("Deseja continuar? s/n: ")
-        resposta = "n"
+        linha = {"Maquina":nomeMaquina, "SO":so, "PorcentCPU":cpu_porcent, "FreqCPU":cpu_speed, 
+        "UsoRAM":ram_used, "PorcentRAM":ram_percent, "UsoDisco":disc_used, "PorcentDisco":disc_percent}
+        json_py.append(linha)
 
         problema_disco = False
         problema_ram = False
@@ -202,53 +190,54 @@ while (True):
         except HTTPError as e :
             print(e.response.text)
 
-        if(resposta == "s"):
-            continue
-        else:
-            break
 
-# Executar o comando 'top' e capturar a saída
-result = subprocess.run(['top', '-b', '-n', '1'], capture_output=True, text=True).stdout
+        data = str(datetime.datetime.now()).replace(" ", "_") 
+        data = data.replace(":", "_")
+        filename = f"dados_capturados_{data}_{nomeMaquina}.json"
 
-print(result)
+        with open(filename, "w") as arquivojson:
+            json.dump(json_py, arquivojson)
 
-# Remover as primeiras linhas que contêm informações de cabeçalho e outras não relevantes
-lines = result.splitlines()[7:]  
+        s3 = boto3.client('s3')
+        with open(filename, "rb") as file:
+            s3.upload_fileobj(file, "s3-raw-lab-tracksecure", filename)
 
-processos = {}
-
-# Para cada linha de processo capturada
-for line in lines:
-    columns = re.split(r'\s+', line)  
-
-    if len(columns) > 12:
-        process_name = columns[12]
-        memory_usage = columns[10]  
         
-        memory_usage = memory_usage.replace(',', '.')
-            
-        memory_usage_value = round(float(memory_usage), 2)
+        if (contador % 1800 == 0):
 
-        if process_name in processos:
-          processos[process_name] += memory_usage_value
-        else:
-          processos[process_name] = memory_usage_value
-        
-for process_name, memory_usage_value in processos.items():
-  if memory_usage_value > 0.0:
-    sql = f"INSERT INTO Processo (nome, usoMemoria, fkServidor) VALUES ('{process_name}', {memory_usage_value}, '{macAddress}')"
-    
-    print(process_name, memory_usage_value)
-    cursor.execute(sql)
-    db_connection.commit()
+            # Executar o comando 'top' e capturar a saída
+            result = subprocess.run(['top', '-b', '-n', '1'], capture_output=True, text=True).stdout
 
-data = str(datetime.datetime.now()).replace(" ", "_") 
-data = data.replace(":", "_")
-filename = f"dados_capturados_{data}_{nomeMaquina}.json"
+            print(result)
 
-with open(filename, "w") as arquivojson:
-    json.dump(json_py, arquivojson)
+            # Remover as primeiras linhas que contêm informações de cabeçalho e outras não relevantes
+            lines = result.splitlines()[7:]  
 
-s3 = boto3.client('s3')
-with open(filename, "rb") as file:
-    s3.upload_fileobj(file, "s3-raw-lab-tracksecure", filename)
+            processos = {}
+
+            # Para cada linha de processo capturada
+            for line in lines:
+                columns = re.split(r'\s+', line)  
+
+                if len(columns) > 12:
+                    process_name = columns[12]
+                    memory_usage = columns[10]  
+                    
+                    memory_usage = memory_usage.replace(',', '.')
+                        
+                    memory_usage_value = round(float(memory_usage), 2)
+
+                    if process_name in processos:
+                        processos[process_name] += memory_usage_value
+                    else:
+                        processos[process_name] = memory_usage_value
+                    
+            for process_name, memory_usage_value in processos.items():
+                if memory_usage_value > 0.0:
+                    sql = f"INSERT INTO Processo (nome, usoMemoria, fkServidor) VALUES ('{process_name}', {memory_usage_value}, '{macAddress}')"
+                
+                    print(process_name, memory_usage_value)
+                    cursor.execute(sql)
+                    db_connection.commit()
+
+        time.sleep(3)
