@@ -191,16 +191,17 @@ while (True):
             print(e.response.text)
 
 
-        data = str(datetime.datetime.now()).replace(" ", "_") 
-        data = data.replace(":", "_")
-        filename = f"dados_capturados_{data}_{nomeMaquina}.json"
+        if (contador % 40 == 0):
+            data = str(datetime.datetime.now()).replace(" ", "_") 
+            data = data.replace(":", "_")
+            filename = f"dados_capturados_{data}_{nomeMaquina}.json"
 
-        with open(filename, "w") as arquivojson:
-            json.dump(json_py, arquivojson)
+            with open(filename, "w") as arquivojson:
+                json.dump(json_py, arquivojson)
 
-        s3 = boto3.client('s3')
-        with open(filename, "rb") as file:
-            s3.upload_fileobj(file, "s3-raw-lab-tracksecure", filename)
+            s3 = boto3.client('s3')
+            with open(filename, "rb") as file:
+                s3.upload_fileobj(file, "s3-raw-lab-tracksecure", filename)
 
         
         if (contador % 1800 == 0):
